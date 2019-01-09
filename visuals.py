@@ -3,6 +3,7 @@
 # Necessary for newer version of matplotlib
 import warnings
 warnings.filterwarnings("ignore", category = UserWarning, module = "matplotlib")
+#warnings.filterwarnings("ignore", category=DeprecationWarning, module = "sklearn")
 #
 # Display inline matplotlib plots with IPython
 from IPython import get_ipython
@@ -14,6 +15,7 @@ import numpy as np
 import sklearn.learning_curve as curves
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.cross_validation import ShuffleSplit, train_test_split
+from sklearn.metrics import r2_score
 
 def ModelLearning(X, y):
     """ Calculates the performance of several models with varying sizes of training data.
@@ -119,12 +121,15 @@ def PredictTrials(X, y, fitter, data):
         # Fit the data
         reg = fitter(X_train, y_train)
         
+        score = r2_score(y_test, reg.predict(X_test))
+        
         # Make a prediction
         pred = reg.predict([data[0]])[0]
         prices.append(pred)
         
         # Result
-        print "Trial {}: ${:,.2f}".format(k+1, pred)
+        print "Trial {}: \t${:,.2f}\t(score = {:.3f})".format(k+1, pred, score)
 
     # Display price range
     print "\nRange in prices: ${:,.2f}".format(max(prices) - min(prices))
+    print "Average price:   ${:,.2f}".format(np.mean(prices))
